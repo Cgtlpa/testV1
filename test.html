@@ -1,253 +1,425 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>YouTube — Liquid Glass UI (Single-file)</title>
-  <style>
-    /* Minimal reset */
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body,#app{height:100%}
-    body{
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-      background: linear-gradient(180deg,#0f172a 0%, #071029 100%);
-      color:#e6eef8;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:28px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Glass UI YouTube Demo</title>
+    <style>
+        :root {
+            --primary: #00bcd4;
+            --background: #000a12;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text: #e0e0e0;
+            --text-muted: #888;
+        }
 
-    .wrap{max-width:1200px;margin:0 auto}
-    header{display:flex;align-items:center;gap:18px;margin-bottom:22px}
-    .logo{
-      width:56px;height:56px;border-radius:14px;display:grid;place-items:center;font-weight:700;
-      background:linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-      box-shadow: 0 6px 18px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-      backdrop-filter: blur(8px) saturate(120%);
-      border:1px solid rgba(255,255,255,0.06);
-    }
-    .logo span{font-size:18px;color:#fff}
-    h1{font-size:20px}
-    p.lead{opacity:0.75;font-size:13px}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    .controls{display:flex;gap:12px;align-items:center;margin:18px 0}
-    .search{
-      flex:1;display:flex;align-items:center;padding:10px 12px;border-radius:12px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.05);backdrop-filter: blur(10px);
-      box-shadow: 0 6px 20px rgba(2,6,23,0.6);
-    }
-    .search input{flex:1;background:transparent;border:0;color:inherit;font-size:15px;outline:none}
-    .btn{padding:9px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
-    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06)}
-    .btn.primary{background:linear-gradient(90deg,#5eead4,#60a5fa);color:#02203b}
+        header {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px 20px 10px;
+            text-align: center;
+        }
 
-    .tabs{display:flex;gap:8px}
-    .tab{padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer}
-    .tab.active{background:linear-gradient(90deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));border:1px solid rgba(255,255,255,0.04)}
+        h1 {
+            color: var(--primary);
+            font-size: 2.5em;
+            margin-bottom: 0.2em;
+        }
 
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:18px}
-    .card{
-      border-radius:14px;overflow:hidden;position:relative;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
-      transition:transform .18s ease,box-shadow .18s ease;
-      cursor:pointer
-    }
-    .card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(2,6,23,0.7)}
-    .thumb{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-    .meta{padding:10px 12px}
-    .title{font-size:14px;font-weight:600;line-height:1.2;margin-bottom:6px;color:#e6eef8}
-    .channel{font-size:12px;opacity:0.75}
+        .search-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0 20px;
+        }
 
-    .player-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:28px}
-    .player-backdrop.open{display:flex}
-    .player-card{width:min(1100px,98%);max-height:90vh;border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-    .player-top{position:relative;background:linear-gradient(180deg,#021227 0%, #00101a 100%);padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
-    .player-iframe{width:100%;height:60vh;border:0}
+        #searchBox {
+            width: min(400px, 90%);
+            padding: 10px 15px;
+            border: 1px solid var(--card-border);
+            border-radius: 25px;
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--text);
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
 
-    footer{margin-top:26px;opacity:0.6;font-size:13px}
+        #searchBox:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 188, 212, 0.5);
+        }
 
-    @media (max-width:640px){.grid{grid-template-columns:repeat(2,1fr)}.player-iframe{height:44vh}}
-  </style>
+        /* --- Player Modal Styling (iPad Fix Applied Here) --- */
+
+        .player-backdrop {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .player-backdrop.open {
+            display: flex;
+        }
+
+        /* Optimized Player Styles */
+        .player-card {
+            width: min(1100px, 98%);
+            max-height: 90vh;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-top {
+            position: relative;
+            background: linear-gradient(180deg, #021227 0%, #00101a 100%);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Aspect Ratio Container for Video */
+        .player-video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+
+        .player-iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        /* --- Grid and Card Styling --- */
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+        }
+
+        .thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 10px;
+            flex-grow: 1;
+        }
+
+        .title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 5px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            height: 2.8em; /* Ensure consistent height for 2 lines */
+        }
+
+        .channel {
+            font-size: 0.9em;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn.load-more {
+            background: var(--primary);
+            color: var(--background);
+            margin-top: 20px;
+        }
+
+        .btn.load-more:hover {
+            background: #00e5ff;
+        }
+
+        .btn.ghost {
+            background: none;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn.ghost:hover {
+            background: rgba(0, 188, 212, 0.2);
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1024px) {
+            .grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 2em; }
+        }
+
+        @media (max-width: 480px) {
+            .grid { grid-template-columns: 1fr; }
+            .card-content { padding: 8px; }
+            .title { font-size: 1em; }
+        }
+    </style>
 </head>
 <body>
-  <div id="app" class="wrap">
+
     <header>
-      <div class="logo"><span>YT</span></div>
-      <div>
-        <h1>YouTube — Liquid Glass UI</h1>
-        <p class="lead">A single-file HTML/CSS/JS demo showing YouTube videos with a frosted glass design.</p>
-      </div>
+        <h1>YouTube Glass UI</h1>
     </header>
 
-    <div class="controls">
-      <div class="search">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="margin-right:8px;opacity:.9">
-          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <input id="q" placeholder="Search YouTube (or press Enter)" />
-        <button id="searchBtn" class="btn ghost" style="margin-left:8px">Search</button>
-      </div>
-      <div class="tabs">
-        <div class="tab active" id="popularTab">Popular (DE)</div>
-        <div class="tab" id="trendTab">Search Results</div>
-      </div>
+    <div class="search-container">
+        <input type="text" id="searchBox" placeholder="Search YouTube Videos">
     </div>
 
-    <div id="message" style="opacity:.9;font-size:13px;margin-bottom:8px">
-      Tip: You can now search or view popular videos.
-    </div>
-
-    <div id="grid" class="grid"></div>
-
-    <div style="display:flex;gap:10px;align-items:center;margin-top:14px">
-      <button id="loadMore" class="btn primary">Load more</button>
-      <button id="clear" class="btn ghost">Clear</button>
-    </div>
-
-    <footer>
-      This demo uses the YouTube Data API v3 and embeds videos with iframes. It doesn't host videos. API quotas apply.
-    </footer>
-  </div>
-
-  <!-- Player Modal -->
-  <div id="playerBackdrop" class="player-backdrop">
-    <div class="player-card">
-      <div class="player-top">
-        <div id="playerTitle" style="font-weight:700"></div>
-        <div style="display:flex;gap:8px">
-          <button id="closePlayer" class="btn ghost">Close</button>
+    <div id="grid" class="grid">
         </div>
-      </div>
-      <iframe id="playerIframe" class="player-iframe" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+
+    <button id="loadMore" class="btn load-more" style="display:none;">Load More</button>
+
+    <div id="playerBackdrop" class="player-backdrop">
+        <div class="player-card">
+            <div class="player-top">
+                <div id="playerTitle" style="font-weight:700"></div>
+                <div style="display:flex;gap:8px">
+                    <button id="closePlayer" class="btn ghost">Close</button>
+                </div>
+            </div>
+            <div class="player-video-container">
+                <iframe id="playerIframe" class="player-iframe" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+            </div>
+            </div>
     </div>
-  </div>
 
-  <script>
-    const API_KEY = 'AIzaSyCZd5-w5IPYmQfhySSixD2eE7iw0yucJhI';
-    const REGION = 'DE';
-    const MAX_RESULTS = 12;
 
-    let nextPageToken = null;
-    let currentMode = 'popular';
-    let lastQuery = '';
+    <script>
+        // *** 1. API Configuration ***
+        // ! IMPORTANT: Replace this placeholder with your actual YouTube Data API Key
+        const API_KEY = 'YOUR_YOUTUBE_API_KEY';
+        const MAX_RESULTS = 12;
 
-    const grid = document.getElementById('grid');
-    const q = document.getElementById('q');
-    const searchBtn = document.getElementById('searchBtn');
-    const loadMore = document.getElementById('loadMore');
-    const clearBtn = document.getElementById('clear');
-    const message = document.getElementById('message');
-    const popularTab = document.getElementById('popularTab');
-    const trendTab = document.getElementById('trendTab');
-    const playerBackdrop = document.getElementById('playerBackdrop');
-    const playerIframe = document.getElementById('playerIframe');
-    const playerTitle = document.getElementById('playerTitle');
-    const closePlayer = document.getElementById('closePlayer');
+        // *** 2. State Variables ***
+        let nextPageToken = '';
+        let currentMode = 'popular'; // 'popular' or 'search'
+        let lastQuery = '';
 
-    function el(tag, attrs = {}, children = []) {
-      const e = document.createElement(tag);
-      for (const k in attrs) e.setAttribute(k, attrs[k]);
-      (Array.isArray(children)?children:[children]).forEach(ch => {
-        if (!ch) return;
-        if (typeof ch === 'string') e.appendChild(document.createTextNode(ch));
-        else e.appendChild(ch);
-      });
-      return e;
-    }
+        // *** 3. DOM Elements ***
+        const grid = document.getElementById('grid');
+        const searchBox = document.getElementById('searchBox');
+        const loadMore = document.getElementById('loadMore');
+        const playerBackdrop = document.getElementById('playerBackdrop');
+        const playerIframe = document.getElementById('playerIframe');
+        const playerTitle = document.getElementById('playerTitle');
+        const closePlayer = document.getElementById('closePlayer');
 
-    function showMessage(txt) { message.textContent = txt }
+        // *** 4. Utility Functions ***
 
-    function makeCard(video){
-      const c = el('div',{class:'card'});
-      const thumb = el('img',{class:'thumb',src:video.thumbnail,alt:video.title});
-      const meta = el('div',{class:'meta'});
-      const title = el('div',{class:'title'}, video.title);
-      const channel = el('div',{class:'channel'}, video.channel);
-      meta.appendChild(title); meta.appendChild(channel);
-      c.appendChild(thumb); c.appendChild(meta);
-      c.addEventListener('click',()=>openPlayer(video));
-      return c;
-    }
+        // Fetches data from the YouTube API
+        async function fetchVideos(query, pageToken = '') {
+            let url = '';
+            
+            if (currentMode === 'popular') {
+                url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&chart=mostPopular&regionCode=US&maxResults=${MAX_RESULTS}&key=${API_KEY}&pageToken=${pageToken}`;
+            } else {
+                url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&maxResults=${MAX_RESULTS}&key=${API_KEY}&pageToken=${pageToken}`;
+            }
 
-    function openPlayer(video){
-      playerTitle.textContent = video.title + ' — ' + video.channel;
-      playerIframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0`;
-      playerBackdrop.classList.add('open');
-    }
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    // Check for common errors like invalid API key
+                    const error = await response.json();
+                    throw new Error(`API Error: ${error.error.message || response.statusText}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Failed to fetch videos:", error);
+                grid.innerHTML = `<p style="color:red; text-align:center; width:100%;">Error loading videos. Check your console for details, or ensure your API key is correct.</p>`;
+                return null;
+            }
+        }
 
-    function closePlayerFn(){
-      playerIframe.src = '';
-      playerBackdrop.classList.remove('open');
-    }
+        // Creates the HTML card for a video
+        function createCard(video) {
+            // Use different structure for search results vs popular videos
+            const videoId = video.id.videoId || video.id;
+            const snippet = video.snippet;
+            const thumbnailUrl = snippet.thumbnails.medium.url;
 
-    closePlayer.addEventListener('click', closePlayerFn);
-    playerBackdrop.addEventListener('click',(e)=>{ if(e.target === playerBackdrop) closePlayerFn(); });
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-video-id', videoId);
+            card.setAttribute('data-title', snippet.title);
+            card.setAttribute('data-channel', snippet.channelTitle);
+            card.innerHTML = `
+                <div class="thumbnail-container">
+                    <img src="${thumbnailUrl}" alt="${snippet.title}" class="thumbnail">
+                </div>
+                <div class="card-content">
+                    <p class="title">${snippet.title}</p>
+                    <p class="channel">${snippet.channelTitle}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => openPlayer({
+                id: videoId,
+                title: snippet.title,
+                channel: snippet.channelTitle
+            }));
+            return card;
+        }
 
-    async function fetchPopular(pageToken=null){
-      currentMode='popular';
-      showMessage('Loading popular videos...');
-      const params = new URLSearchParams({part:'snippet,statistics',chart:'mostPopular',regionCode:REGION,maxResults:MAX_RESULTS,key:API_KEY});
-      if(pageToken) params.set('pageToken',pageToken);
-      try{
-        const res = await fetch('https://www.googleapis.com/youtube/v3/videos?'+params.toString());
-        const json = await res.json();
-        if(json.error) throw new Error(json.error.message||'API error');
-        const items = json.items.map(i=>({
-          id:i.id,
-          title:i.snippet.title,
-          channel:i.snippet.channelTitle,
-          thumbnail:i.snippet.thumbnails?.high?.url||i.snippet.thumbnails?.default?.url
-        }));
-        items.forEach(it=>grid.appendChild(makeCard(it)));
-        nextPageToken = json.nextPageToken || null;
-        showMessage('Showing popular videos.');
-      }catch(err){ console.error(err); showMessage('Error: '+err.message) }
-    }
+        // Renders videos to the grid
+        function renderVideos(data, append = false) {
+            if (!data) return;
 
-    async function search(qstr,pageToken=null){
-      if(!qstr) return;
-      currentMode='search';
-      showMessage('Searching for “'+qstr+'”...');
-      const params = new URLSearchParams({part:'snippet',maxResults:MAX_RESULTS,q:qstr,type:'video',key:API_KEY});
-      if(pageToken) params.set('pageToken',pageToken);
-      try{
-        const res = await fetch('https://www.googleapis.com/youtube/v3/search?'+params.toString());
-        const json = await res.json();
-        if(json.error) throw new Error(json.error.message||'API error');
-        const items = json.items.map(i=>({
-          id:i.id.videoId,
-          title:i.snippet.title,
-          channel:i.snippet.channelTitle,
-          thumbnail:i.snippet.thumbnails?.high?.url||i.snippet.thumbnails?.default?.url
-        }));
-        items.forEach(it=>grid.appendChild(makeCard(it)));
-        nextPageToken = json.nextPageToken || null;
-        showMessage('Search complete.');
-      }catch(err){ console.error(err); showMessage('Error: '+err.message) }
-    }
+            if (!append) {
+                grid.innerHTML = '';
+            }
 
-    searchBtn.addEventListener('click',()=>{
-      grid.innerHTML=''; lastQuery=q.value.trim();
-      if(lastQuery){ search(lastQuery); } else { fetchPopular(); }
-    });
+            const items = data.items;
+            items.forEach(item => {
+                grid.appendChild(createCard(item));
+            });
 
-    q.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ searchBtn.click() } });
+            nextPageToken = data.nextPageToken || '';
+            loadMore.style.display = nextPageToken ? 'block' : 'none';
+        }
 
-    loadMore.addEventListener('click',()=>{
-      if(!nextPageToken){ showMessage('No more results (or check API quota).'); return; }
-      if(currentMode==='popular') fetchPopular(nextPageToken); else search(lastQuery,nextPageToken);
-    });
+        // Opens the video player modal
+        function openPlayer(video) {
+            playerTitle.textContent = video.title + ' — ' + video.channel;
+            // Uses the standard YouTube embed URL with autoplay
+            playerIframe.src = `https://www.youtube.com/embed/${video.id}?autoplay=1&rel=0`;
+            playerBackdrop.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        }
 
-    clearBtn.addEventListener('click',()=>{ grid.innerHTML=''; nextPageToken=null; showMessage('Cleared'); });
+        // Closes the video player modal
+        function closePlayerModal() {
+            playerBackdrop.classList.remove('open');
+            playerIframe.src = ''; // Stop the video from playing in the background
+            document.body.style.overflow = ''; // Restore scrolling
+        }
 
-    popularTab.addEventListener('click',()=>{ popularTab.classList.add('active'); trendTab.classList.remove('active'); grid.innerHTML=''; nextPageToken=null; fetchPopular(); });
-    trendTab.addEventListener('click',()=>{ trendTab.classList.add('active'); popularTab.classList.remove('active'); grid.innerHTML=''; showMessage('Enter a search to see results'); });
 
-    (function init(){ fetchPopular(); })();
-  </script>
+        // *** 5. Main Logic ***
+
+        // Loads the initial set of videos
+        async function loadInitial() {
+            const data = await fetchVideos(null);
+            renderVideos(data);
+        }
+
+        // Handles the "Load More" button click
+        async function handleLoadMore() {
+            const data = await fetchVideos(lastQuery, nextPageToken);
+            renderVideos(data, true);
+        }
+
+        // Handles the search box input
+        let searchTimeout;
+        function handleSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                const query = searchBox.value.trim();
+                
+                if (query.length > 2) {
+                    currentMode = 'search';
+                    lastQuery = query;
+                    const data = await fetchVideos(query);
+                    renderVideos(data);
+                } else if (currentMode === 'search') {
+                    // Revert to popular if search is cleared
+                    currentMode = 'popular';
+                    lastQuery = '';
+                    loadInitial();
+                }
+            }, 500); // 500ms debounce
+        }
+
+
+        // *** 6. Initialization ***
+        
+        // Attach event listeners
+        searchBox.addEventListener('input', handleSearch);
+        loadMore.addEventListener('click', handleLoadMore);
+        closePlayer.addEventListener('click', closePlayerModal);
+        playerBackdrop.addEventListener('click', (e) => {
+            if (e.target === playerBackdrop) {
+                closePlayerModal();
+            }
+        });
+        
+        // Load popular videos on startup
+        loadInitial();
+    </script>
 </body>
 </html>
